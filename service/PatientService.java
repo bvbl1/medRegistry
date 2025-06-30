@@ -1,10 +1,13 @@
 package com.abylay.task1.service;
 
 import com.abylay.task1.DTOs.PatientResponse;
+import com.abylay.task1.models.AccessLog;
 import com.abylay.task1.models.Patient;
+import com.abylay.task1.repository.AccessLogRepository;
 import com.abylay.task1.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +15,12 @@ import java.util.List;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final EncryptionService encryptionService;
+    private final AccessLogService accessLogService;
 
-    PatientService(PatientRepository patientRepository, EncryptionService encryptionService) {
+    PatientService(PatientRepository patientRepository, EncryptionService encryptionService, AccessLogService accessLogService) {
         this.patientRepository = patientRepository;
         this.encryptionService = encryptionService;
+        this.accessLogService = accessLogService;
     }
 
     public Patient addPatient(Patient patient) {
@@ -62,30 +67,43 @@ public class PatientService {
         patientRepository.deleteById(id);
     }
 
-    public PatientResponse getByIin(String iin, boolean isAdmin) {
+    public PatientResponse getByIin(String iin, boolean isAdmin, long userId, String username) {
         Patient patient = patientRepository.findByIin(iin).orElse(null);
 
         if (patient == null) {
             throw new RuntimeException("Patient not found");
         }
+        accessLogService.logAccess(userId, username, List.of(iin));
 
         return mapToResponse(patient, isAdmin);
     }
 
-    public List<PatientResponse> findAllByFirstName(String firstName, boolean isAdmin) {
+    public List<PatientResponse> findAllByFirstName(String firstName, boolean isAdmin, long userId, String username) {
         List<Patient> patients = patientRepository.findAllByFirstName(encryptionService.encrypt(firstName));
         List<PatientResponse> patientResponses = new ArrayList<>();
+        List<String> accessIins = new ArrayList<>();
         for (Patient patient : patients) {
             patientResponses.add(mapToResponse(patient, isAdmin));
+            accessIins.add(patient.getIin());
+        }
+
+        if (!accessIins.isEmpty()) {
+            accessLogService.logAccess(userId, username, accessIins);
         }
         return patientResponses;
     }
 
-    public List<PatientResponse> findAllByLastName(String lastName, boolean isAdmin) {
+    public List<PatientResponse> findAllByLastName(String lastName, boolean isAdmin, long userId, String username) {
         List<Patient> patients = patientRepository.findAllByLastName(encryptionService.encrypt(lastName));
         List<PatientResponse> patientResponses = new ArrayList<>();
+        List<String> accessIins = new ArrayList<>();
         for (Patient patient : patients) {
             patientResponses.add(mapToResponse(patient, isAdmin));
+            accessIins.add(patient.getIin());
+        }
+
+        if (!accessIins.isEmpty()) {
+            accessLogService.logAccess(userId, username, accessIins);
         }
         return patientResponses;
     }

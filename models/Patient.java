@@ -1,6 +1,7 @@
 package com.abylay.task1.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import org.antlr.v4.runtime.misc.NotNull;
 
 @Entity
@@ -18,7 +19,9 @@ public class Patient {
     private String surname;
     @NotNull
     @Column(unique = true)
+    @Pattern(regexp = "\\d{12}", message = "IIN must consist of 12 digits")
     private String iin;
+    @Pattern(regexp = "^\\+7\\d{10}$", message = "The phone format must be +7XXXXXXXXXX")
     private String phone;
     private Gender gender;
 
