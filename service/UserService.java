@@ -34,7 +34,7 @@ public class UserService {
             throw new UsernameNotFoundException("Username not found");
         }
 
-        if (!encryptionService.encrypt(authRequest.getPassword()).equals(existingUser.getPassword())) {
+        if (!encryptionService.decrypt(existingUser.getPassword()).equals(authRequest.getPassword())) {
             throw new RuntimeException("Wrong password");
         }
 

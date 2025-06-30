@@ -65,10 +65,10 @@ public class PatientController {
 
     private boolean isAdmin(Principal principal) {
         if (principal instanceof JwtAuthenticationToken token) {
+            System.out.println("Authorities: " + token.getAuthorities());
             return token.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         }
         return false;
     }
-
 }
