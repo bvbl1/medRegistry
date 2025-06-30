@@ -15,12 +15,14 @@ public class AccessLogService {
         this.accessLogRepository = accessLogRepository;
     }
 
-    public void logAccess(Long userId, String username, List<String> iin) {
+    public void logAccess(Long userId, String username, List<String> iin, String method, String endpoint) {
         AccessLog log = new AccessLog();
         log.setUserId(userId);
         log.setUsername(username);
         log.setAccessedAt(LocalDateTime.now());
         log.setAccessedIins(iin);
+        log.setMethod(method);
+        log.setEndpoint(endpoint);
         accessLogRepository.save(log);
     }
 }

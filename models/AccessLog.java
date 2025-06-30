@@ -20,18 +20,37 @@ public class AccessLog {
     @CollectionTable(name = "accessed_iins", joinColumns = @JoinColumn(name = "log_id"))
     @Column(name = "iin")
     private List<String> accessedIins = new ArrayList<>();
+    private String method;
+    private String endpoint;
 
     private LocalDateTime accessedAt;
 
-    public AccessLog(Long id, Long userId, String username, List<String> accessedIins, LocalDateTime accessedAt) {
+    public AccessLog(Long id, Long userId, String username, List<String> accessedIins, LocalDateTime accessedAt, String method, String endpoint) {
         this.id = id;
         this.userId = userId;
         this.username = username;
         this.accessedIins = accessedIins;
         this.accessedAt = accessedAt;
+        this.method = method;
+        this.endpoint = endpoint;
+    }
+    public AccessLog() {
     }
 
-    public AccessLog() {
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
     public Long getId() {

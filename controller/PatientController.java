@@ -24,30 +24,43 @@ public class PatientController {
     }
 
     @PostMapping
-    public Patient addPatient(@RequestBody @Valid Patient patient) {
-        return patientService.addPatient(patient);
+    public PatientResponse addPatient(@RequestBody @Valid Patient patient, Principal principal) {
+        boolean isAdmin = isAdmin(principal);
+        Long userId = extractUserId(principal);
+        String username = principal.getName();
+        return patientService.addPatient(patient, isAdmin, userId, username);
     }
 
     @GetMapping
     public List<PatientResponse> getAllPatients(Principal principal) {
         boolean isAdmin = isAdmin(principal);
-        return patientService.getAllPatients(isAdmin);
+        Long userId = extractUserId(principal);
+        String username = principal.getName();
+        return patientService.getAllPatients(isAdmin, userId, username);
     }
 
     @GetMapping("/{id}")
-    public Patient getPatientById(@PathVariable long id) {
-        return patientService.getPatientById(id);
+    public PatientResponse getPatientById(@PathVariable long id, Principal principal) {
+        boolean isAdmin = isAdmin(principal);
+        Long userId = extractUserId(principal);
+        String username = principal.getName();
+        return patientService.getPatientById(id, isAdmin, userId, username);
     }
 
     @PutMapping
     public PatientResponse updatePatient(@RequestBody Patient patient, Principal principal) {
         boolean isAdmin = isAdmin(principal);
-        return patientService.updatePatient(patient, isAdmin);
+        Long userId = extractUserId(principal);
+        String username = principal.getName();
+        return patientService.updatePatient(patient, isAdmin, userId, username);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePatientById(@PathVariable long id) {
-        patientService.deletePatient(id);
+    public void deletePatientById(@PathVariable long id, Principal principal) {
+        boolean isAdmin = isAdmin(principal);
+        Long userId = extractUserId(principal);
+        String username = principal.getName();
+        patientService.deletePatient(id, userId, username);
     }
 
     @GetMapping("/iin/{iin}")
